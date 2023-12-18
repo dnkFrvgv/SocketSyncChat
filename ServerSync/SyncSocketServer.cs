@@ -59,8 +59,6 @@ namespace ServerSync
                         var received = handler.Receive(bufferForMessage);
                         var message = Encoding.UTF8.GetString(bufferForMessage, 0, received);
 
-                        Console.WriteLine($"Message received from client: \"{message}\"");
-
 
                         if (message == "DISCONNECT")
                         {
@@ -71,6 +69,8 @@ namespace ServerSync
 
                             break;
                         }
+
+                        Console.WriteLine($"Message received from client: \"{message}\"");
 
                         UserInteractionLoop(handler);
 
