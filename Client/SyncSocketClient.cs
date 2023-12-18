@@ -52,19 +52,17 @@ namespace Client
                     byte[] messageLengthBytes = BitConverter.GetBytes(messageLength);
                     _client.Send(messageLengthBytes);
                     _client.Send(messageBytes);
-
-                    Console.WriteLine("Client sent a message");
-                }
-                catch (ArgumentException e) {
-                    LogError(e);
                 }
                 catch (SocketException e)
                 {
-                    LogError(e);
-                }
-                catch (Exception e)
-                {
-                    LogError(e);
+                    if (e.ErrorCode == (int)SocketError.ConnectionAborted)
+                    {
+                        Console.WriteLine("server disconnected abruptly");
+                    }
+                    else
+                    {
+                        LogError(e);
+                    }
                 }
             }
             else
@@ -89,19 +87,44 @@ namespace Client
                     var message = Encoding.UTF8.GetString(buffer, 0, received);
 
                     Console.WriteLine($"Message received from Server: {message}");
+
                 }
                 catch (SocketException e)
                 {
-                    LogError(e);
-                }
-                catch (Exception e)
-                {
-                    LogError(e);
+                    if (e.ErrorCode == (int)SocketError.ConnectionAborted)
+                    {
+                        Console.WriteLine("server disconnected abruptly");
+                    }
+                    else
+                    {
+                        LogError(e);
+                    }
                 }
             }
             else
             {
                 Console.WriteLine($"the client server wasnt initialized");
+            }
+        }
+
+        public void UserInteractionLoop()
+        {
+            while (true)
+            {
+                Console.WriteLine("Type your message or type END to terminate:");
+                var message = Console.ReadLine();
+
+                if (message == null || message == "END")
+                {
+                    this.Disconnect();
+                    this.Dispose();
+                    break;
+                }
+                else
+                {
+                    this.SendMessage(message);
+                    this.ReceiveMessage();
+                }
             }
         }
 

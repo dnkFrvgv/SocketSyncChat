@@ -40,7 +40,7 @@ namespace ServerSync
             }
         }
 
-        public void ReceiveMessage()
+        public void ReceiveMessages()
         {
             if (_listener != null)
             {
@@ -61,17 +61,19 @@ namespace ServerSync
 
                         Console.WriteLine($"Message received from client: \"{message}\"");
 
-                        var ackMessege = "Message acknowlegded";
-                        var byteAckMessage = Encoding.UTF8.GetBytes(ackMessege);
-                        handler.Send(byteAckMessage);
 
                         if (message == "DISCONNECT")
                         {
                             Console.WriteLine("Client disconnected");
                             handler.Shutdown(SocketShutdown.Receive);
-                            
+                            handler.Close();
+                            Dispose();
+
                             break;
                         }
+
+                        UserInteractionLoop(handler);
+
                     }
                 }
                 catch (SocketException e)
@@ -91,6 +93,34 @@ namespace ServerSync
             {
                 Console.WriteLine($"the server wasnt initialized");
             }
+        }
+
+
+        private void UserInteractionLoop(Socket handler)
+        {
+            while (true)
+            {
+                Console.WriteLine($"Type your message:");
+                var message = Console.ReadLine();
+
+                if (message != null)
+                {
+                    SendMessage(handler, message);
+                    break;
+                }
+            }
+        }
+
+        public void SendMessage(Socket handler, string message)
+        {
+            byte[] byteMessage = Encoding.UTF8.GetBytes(message);
+
+            int messageLength = byteMessage.Length;
+
+            byte[] byteMessageLength = BitConverter.GetBytes(messageLength);
+
+            handler.Send(byteMessageLength);
+            handler.Send(byteMessage);
         }
 
         public void Dispose()
