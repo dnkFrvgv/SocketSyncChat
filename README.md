@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a simple socket communication program developed in C# using console applications. The program facilitates synchronous communication with a persistent connection, utilising stream sockets and the TCP protocol. The server application listens on a specific IP address and port. The client application connects to the server's IP address and port.
+This is a socket communication program developed in C# using console applications. The program facilitates synchronous communication with a persistent connection, utilising stream sockets and the TCP protocol. The server application listens on a specific IP address and port. The client application connects to the server's IP address and port.
 ## Features
 
 - **Communication Type:** Synchronous
